@@ -22,6 +22,7 @@ run_test:
 
 clean:
 	rm -f *.o
+	rm -f *.out
 	rm -f *.exe
 	rm -f *.dot
 	rm -f *.html
