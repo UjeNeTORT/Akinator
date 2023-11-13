@@ -50,20 +50,27 @@ int TreeDtor (Tree * tree)
     return 0;
 }
 
-int TreeAddNodeAfter (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp_t Comparator)
+int TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp_t Comparator)
 {
     assert(tree);
     assert(new_node);
 
     int ret_val = 0;
 
-    if (!node && !tree->root && tree->size == 0) // new node is tree root then
+    if (!node && !tree->root)
     {
-        tree->root = new_node;
+        if (tree->size == 0) // new node is tree root then
+        {
+            tree->root = new_node;
 
-        tree->size++;
+            tree->size++;
 
-        return ret_val;
+            return ret_val;
+        }
+        else
+        {
+            return -1; // error code
+        }
     }
 
     int cmp_res = Comparator(new_node, node);
@@ -72,7 +79,7 @@ int TreeAddNodeAfter (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp
     {
         if (node->left)
         {
-            ret_val = TreeAddNodeAfter(tree, node->left, new_node, Comparator);
+            ret_val = TreeHangLeafSorted (tree, node->left, new_node, Comparator);
         }
         else
         {
@@ -83,7 +90,7 @@ int TreeAddNodeAfter (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp
     {
         if (node->right)
         {
-            ret_val = TreeAddNodeAfter(tree, node->right, new_node, Comparator);
+            ret_val = TreeHangLeafSorted (tree, node->right, new_node, Comparator);
         }
         else
         {
@@ -103,60 +110,109 @@ int TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, Tra
         return 0;
     }
 
-    // assert(node->tree == tree);
-
     int ret_val = 0;
 
     if (traverse_order == PREORDER)
     {
-        ret_val = NodeAction(node); // did not test what it does
+        ret_val = NodeAction(node); // did not test
         TraverseTreeFrom(tree, node->left, NodeAction, traverse_order);
         TraverseTreeFrom(tree, node->right, NodeAction, traverse_order);
     }
     else if (traverse_order == INORDER)
     {
         TraverseTreeFrom(tree, node->left, NodeAction, traverse_order);
-        ret_val = NodeAction(node); // did not test what it does
+        ret_val = NodeAction(node); // did not test
         TraverseTreeFrom(tree, node->right, NodeAction, traverse_order);
     }
     else if (traverse_order == POSTORDER)
     {
         TraverseTreeFrom(tree, node->left, NodeAction, traverse_order);
         TraverseTreeFrom(tree, node->right, NodeAction, traverse_order);
-        ret_val = NodeAction(node); // did not test what it does
+        ret_val = NodeAction(node); // did not test
     }
     else
     {
+        fprintf(stderr, "Wrong traversal order: %d\n", traverse_order);
+
         return 1;
     }
 
     return ret_val;
 }
 
-int PrintfNode (Tree * tree, TreeNode * node)
+int TraverseTree (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order)
 {
     assert(tree);
-    assert(node);
+
+    return TraverseTreeFrom(tree, tree->root, NodeAction, traverse_order);
+}
+
+int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
+{
+    if (node == NULL)
+    {
+        fprintf(stream, "nil ");
+
+        return 0;
+    }
 
     int ret_val = 0;
 
-    if (node->left || node->right)
+    fprintf(stream, "( ");
+
+    if (traverse_order == PREORDER)
     {
-        ret_val = fprintf(stdout, "CONDITION NODE: %d\n", node->data);
+        ret_val = fprintf(stream, "%d ", node->data); // did not test
+
+        fprintf(stream, ", ");
+
+        FprintfSubtree(stream, node->left, traverse_order);
+
+        fprintf(stream, ", ");
+
+        FprintfSubtree(stream, node->right, traverse_order);
+    }
+    else if (traverse_order == INORDER)
+    {
+        FprintfSubtree(stream, node->left, traverse_order);
+
+        fprintf(stream, ", ");
+
+        ret_val = fprintf(stream, "%d ", node->data); // did not test
+
+        fprintf(stream, ", ");
+
+        FprintfSubtree(stream, node->right, traverse_order);
+    }
+    else if (traverse_order == POSTORDER)
+    {
+        FprintfSubtree(stream, node->left, traverse_order);
+
+        fprintf(stream, ", ");
+
+        FprintfSubtree(stream, node->right, traverse_order);
+
+        fprintf(stream, ", ");
+
+        ret_val = fprintf(stream, "%d ", node->data); // did not test
     }
     else
     {
-        ret_val = fprintf(stdout, "LEAF NODE: %d\n", node->data);
+        fprintf(stream, "ErrOrdr");
+
+        ret_val = -1;
     }
+
+    fprintf(stream, ") ");
 
     return ret_val;
 }
 
-int PrintfTree (Tree * tree)
+int FprintfTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
 {
     assert(tree);
 
-
+    return FprintfSubtree(stream, tree->root, traverse_order);
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)
