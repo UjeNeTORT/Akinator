@@ -3,10 +3,11 @@
 
 #include <stdio.h>
 
-#define PRINTF_DEBUG(format, ...) \
-    PrintfDebug (__PRETTY_FUNCTION__, __LINE__, __FILE__, format, __VA_ARGS__)
+const int POISON = 0xD00D1E;
 
-typedef int elem_t;
+#define PRINTF_DEBUG(format, ...) \
+    PrintfDebug (__PRETTY_FUNCTION__, __LINE__, __FILE__, format __VA_OPT__(,) __VA_ARGS__)
+
 
 typedef enum
 {
@@ -15,9 +16,11 @@ typedef enum
     POSTORDER = 1,
 } TraverseOrder;
 
+typedef int elem_t;
+
 struct TreeNode
 {
-    elem_t val;
+    elem_t data;
 
     TreeNode * left;
     TreeNode * right;
@@ -27,21 +30,27 @@ struct Tree
 {
     TreeNode * root;
 
-    int height;
     int size;
 };
 
-typedef int (* NodeAction_t(TreeNode * node));
+typedef int (* NodeAction_t) (TreeNode *);
 
-TreeNode* TreeNodeCtor (Tree * tree, elem_t val);
+typedef int (* NodeCmp_t) (TreeNode * node1, TreeNode * node2);
+
+TreeNode* TreeNodeCtor (elem_t val);
 elem_t    TreeNodeDtor (Tree * tree, TreeNode * node);
 
-Tree*     TreeCtor     ();
+Tree      TreeCtor     ();
 int       TreeDtor     (Tree * tree);
+
+int       TreeAddNodeAfter (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp_t comparator);
 
 int       TraverseTree     (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order);
 int       TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, TraverseOrder traverse_order);
 
-int       PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...) __attribute__( (format(printf, 4, 5)) );
+int PrintfNode (Tree * tree, TreeNode * node);
+int PrintfTree (Tree * tree);
+
+elem_t    PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...) __attribute__( (format(printf, 4, 5)) );
 
 #endif // TREE_H
