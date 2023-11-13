@@ -8,13 +8,19 @@ const int POISON = 0xD00D1E;
 #define PRINTF_DEBUG(format, ...) \
     PrintfDebug (__PRETTY_FUNCTION__, __LINE__, __FILE__, format __VA_OPT__(,) __VA_ARGS__)
 
-
 typedef enum
 {
     PREORDER  = -1,
     INORDER   = 0,
     POSTORDER = 1,
 } TraverseOrder;
+
+typedef enum
+{
+    LEFT    = -1,
+    REPLACE = 0,
+    RIGHT   = 1,
+} NodeLocation;
 
 typedef int elem_t;
 
@@ -45,6 +51,8 @@ Tree      TreeCtor     ();
 int       TreeDtor     (Tree * tree);
 
 int       TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeCmp_t comparator);
+
+int       TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocation new_node_location, NodeLocation subtree_location);
 
 
 int       TraverseTree     (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order);

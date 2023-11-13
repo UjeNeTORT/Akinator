@@ -67,10 +67,10 @@ int TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeC
 
             return ret_val;
         }
-        else
-        {
-            return -1; // error code
-        }
+    }
+    else
+    {
+        return -1; // error code
     }
 
     int cmp_res = Comparator(new_node, node);
@@ -96,6 +96,70 @@ int TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeC
         {
             node->right = new_node;
         }
+    }
+
+    return ret_val;
+}
+
+int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocation new_node_location, NodeLocation subtree_location)
+{
+    assert(tree);
+
+    int ret_val = 0;
+
+    if (!node && !tree->root)
+    {
+        if (tree->size == 0) // new node is tree root then
+        {
+            tree->root = new_node;
+
+            tree->size++;
+
+            return ret_val;
+        }
+    }
+    else
+    {
+        ret_val = -1;
+
+        return ret_val; // error code
+    }
+
+    TreeNode * subtree_ptr = NULL;
+
+    if (new_node_location == LEFT)
+    {
+        subtree_ptr = node->left;
+        node->left  = new_node;
+
+    }
+    else if (new_node_location == RIGHT)
+    {
+        subtree_ptr = node->right;
+        node->right = new_node;
+    }
+    else if (new_node_location == REPLACE)
+    {
+        subtree_ptr = node->left;
+        new_node->left = node->left;
+        new_node->right = node->right;
+
+        *node = *new_node;
+    }
+
+    if (subtree_location == LEFT)
+    {
+        new_node->left = subtree_ptr;
+    }
+    else if (subtree_location == RIGHT)
+    {
+        new_node->right = subtree_ptr;
+    }
+    else if (subtree_location == REPLACE) // we forbid such fucntionality
+    {
+        PRINTF_DEBUG("Forbidden to hang subtree onto intself. Choose LEFT or RIGHT\n");
+
+        ret_val = 1;
     }
 
     return ret_val;
