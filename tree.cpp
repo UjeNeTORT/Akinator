@@ -131,7 +131,6 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
     {
         subtree_ptr = node->left;
         node->left  = new_node;
-
     }
     else if (new_node_location == RIGHT)
     {
@@ -147,7 +146,11 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
         *node = *new_node;
     }
 
-    if (subtree_location == LEFT)
+    if (new_node_location == REPLACE)
+    {
+        // do nothing
+    }
+    else if (subtree_location == LEFT)
     {
         new_node->left = subtree_ptr;
     }
