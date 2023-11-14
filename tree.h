@@ -54,6 +54,7 @@ int       TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node,
 
 int       TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocation new_node_location, NodeLocation subtree_location);
 
+int       DeleteSubtree (Tree * tree, TreeNode * node);
 
 int       TraverseTree     (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order);
 int       TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, TraverseOrder traverse_order);

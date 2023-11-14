@@ -19,14 +19,19 @@ TreeNode* TreeNodeCtor (elem_t val)
 
 int TreeNodeDtor (TreeNode * node)
 {
-    assert(node);
+    if (!node)
+    {
+        return 0;
+    }
+
+    PRINTF_DEBUG("node->data = %d\n", node->data);
 
     node->data   = NULL;
 
     // assume that left and right subtrees have already been freed
 
-    node->left  = NULL;
-    node->right = NULL;
+    TreeNodeDtor(node->left);
+    TreeNodeDtor(node->right);
 
     free(node);
 
