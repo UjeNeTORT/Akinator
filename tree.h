@@ -45,7 +45,7 @@ typedef int (* NodePrinter_t) (FILE * stream, TreeNode * node, TraverseOrder tra
 typedef int (* NodeCmp_t) (TreeNode * node1, TreeNode * node2);
 
 TreeNode* TreeNodeCtor (elem_t val);
-elem_t    TreeNodeDtor (Tree * tree, TreeNode * node);
+int       TreeNodeDtor (TreeNode * node);
 
 Tree      TreeCtor     ();
 int       TreeDtor     (Tree * tree);

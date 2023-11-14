@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include "colors.h"
 #include "tree.h"
 
 TreeNode* TreeNodeCtor (elem_t val)
@@ -16,20 +17,20 @@ TreeNode* TreeNodeCtor (elem_t val)
     return new_node;
 }
 
-elem_t TreeNodeDtor (Tree * tree, TreeNode * node)
+int TreeNodeDtor (TreeNode * node)
 {
-    assert(tree);
     assert(node);
 
-    elem_t val = node->data;
-
     node->data   = NULL;
+
+    // assume that left and right subtrees have already been freed
+
     node->left  = NULL;
     node->right = NULL;
 
     free(node);
 
-    return val;
+    return 0;
 }
 
 Tree TreeCtor ()
@@ -39,13 +40,12 @@ Tree TreeCtor ()
     return tree;
 }
 
-//! not finished
 int TreeDtor (Tree * tree)
 {
     assert(tree);
 
     // traverse through the tree and free each node
-
+    TraverseTree(tree, TreeNodeDtor, POSTORDER);
 
     return 0;
 }
@@ -67,10 +67,12 @@ int TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeC
 
             return ret_val;
         }
-    }
-    else
-    {
-        return -1; // error code
+        else
+        {
+            ret_val = -1; // error code
+
+            return ret_val;
+        }
     }
 
     int cmp_res = Comparator(new_node, node);
@@ -117,13 +119,14 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
 
             return ret_val;
         }
-    }
-    else
-    {
-        ret_val = -1;
+        else
+        {
+            ret_val = -1; // error code
 
-        return ret_val; // error code
+            return ret_val;
+        }
     }
+
 
     TreeNode * subtree_ptr = NULL;
 
@@ -279,14 +282,18 @@ int FprintfTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
 {
     assert(tree);
 
-    return FprintfSubtree(stream, tree->root, traverse_order);
+    int ret_val = FprintfSubtree(stream, tree->root, traverse_order);
+
+    fprintf(stream, "\n");
+
+    return ret_val;
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)
 {
     assert(format);
 
-    fprintf(stderr, "[DEBUG MESSAGE %s %d %s]\n<< ", funcname, line, filename);
+    fprintf(stderr, BLACK_CLR "[DEBUG MESSAGE %s %d %s]\n<< ", funcname, line, filename);
 
     va_list ptr;
 
@@ -296,7 +303,7 @@ int PrintfDebug (const char * funcname, int line, const char * filename, const c
 
     va_end(ptr);
 
-    fprintf(stdout, "\n");
+    fprintf(stdout, "\n " RST_CLR);
 
     return res;
 }
