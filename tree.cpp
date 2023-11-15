@@ -24,12 +24,7 @@ int TreeNodeDtor (TreeNode * node)
         return 0;
     }
 
-    node->data   = NULL;
-
-    // assume that left and right subtrees have already been freed
-
-    TreeNodeDtor(node->left);
-    TreeNodeDtor(node->right);
+    node->data   = NULL; // todo poison unique for each elem t
 
     free(node);
 
