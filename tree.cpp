@@ -24,8 +24,6 @@ int TreeNodeDtor (TreeNode * node)
         return 0;
     }
 
-    PRINTF_DEBUG("node->data = %d\n", node->data);
-
     node->data   = NULL;
 
     // assume that left and right subtrees have already been freed
@@ -49,7 +47,7 @@ int TreeDtor (Tree * tree)
 {
     assert(tree);
 
-    // traverse through the tree and free each node
+    // traverse the tree and free each node
     TraverseTree(tree, TreeNodeDtor, POSTORDER);
 
     return 0;
@@ -180,7 +178,7 @@ int TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, Tra
 {
     assert(tree);
 
-    if (node == NULL)
+    if (!node)
     {
         return 0;
     }
@@ -237,7 +235,7 @@ int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order
 
     if (traverse_order == PREORDER)
     {
-        ret_val = fprintf(stream, "%d ", node->data); // did not test
+        ret_val = fprintf(stream, "%s ", node->data); // did not test
 
         fprintf(stream, ", ");
 
@@ -253,7 +251,7 @@ int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order
 
         fprintf(stream, ", ");
 
-        ret_val = fprintf(stream, "%d ", node->data); // did not test
+        ret_val = fprintf(stream, "%s ", node->data); // did not test
 
         fprintf(stream, ", ");
 
@@ -269,7 +267,7 @@ int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order
 
         fprintf(stream, ", ");
 
-        ret_val = fprintf(stream, "%d ", node->data); // did not test
+        ret_val = fprintf(stream, "%s ", node->data); // did not test
     }
     else
     {

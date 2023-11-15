@@ -22,7 +22,7 @@ typedef enum
     RIGHT   = 1,
 } NodeLocation;
 
-typedef int elem_t;
+typedef const char * elem_t;
 
 struct TreeNode
 {
@@ -63,6 +63,6 @@ int FprintfTree    (FILE * stream, Tree * tree, TraverseOrder traverse_order);
 int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
 
 
-elem_t    PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...) __attribute__( (format(printf, 4, 5)) );
+int       PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...) __attribute__( (format(printf, 4, 5)) );
 
 #endif // TREE_H
