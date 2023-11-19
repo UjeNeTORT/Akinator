@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "colors.h"
 #include "tree.h"
@@ -24,16 +25,16 @@ int TreeNodeDtor (TreeNode * node)
         return 0;
     }
 
-    node->data   = NULL; // todo poison unique for each elem t
+    free((void *) node->data);
 
     free(node);
 
     return 0;
 }
 
-Tree TreeCtor ()
+Tree TreeCtor (TreeNode * root)
 {
-    Tree tree = { NULL, 0 };
+    Tree tree = { root, 0 };
 
     return tree;
 }
@@ -215,7 +216,7 @@ int TraverseTree (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_o
     return TraverseTreeFrom(tree, tree->root, NodeAction, traverse_order);
 }
 
-int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
+int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
 {
     if (node == NULL)
     {
@@ -232,35 +233,23 @@ int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order
     {
         ret_val = fprintf(stream, "%s ", node->data); // did not test
 
-        fprintf(stream, ", ");
+        WriteSubtree(stream, node->left, traverse_order);
 
-        FprintfSubtree(stream, node->left, traverse_order);
-
-        fprintf(stream, ", ");
-
-        FprintfSubtree(stream, node->right, traverse_order);
+        WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == INORDER)
     {
-        FprintfSubtree(stream, node->left, traverse_order);
-
-        fprintf(stream, ", ");
+        WriteSubtree(stream, node->left, traverse_order);
 
         ret_val = fprintf(stream, "%s ", node->data); // did not test
 
-        fprintf(stream, ", ");
-
-        FprintfSubtree(stream, node->right, traverse_order);
+        WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == POSTORDER)
     {
-        FprintfSubtree(stream, node->left, traverse_order);
+        WriteSubtree(stream, node->left, traverse_order);
 
-        fprintf(stream, ", ");
-
-        FprintfSubtree(stream, node->right, traverse_order);
-
-        fprintf(stream, ", ");
+        WriteSubtree(stream, node->right, traverse_order);
 
         ret_val = fprintf(stream, "%s ", node->data); // did not test
     }
@@ -276,15 +265,75 @@ int FprintfSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order
     return ret_val;
 }
 
-int FprintfTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
+int WriteTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
 {
     assert(tree);
 
-    int ret_val = FprintfSubtree(stream, tree->root, traverse_order);
+    int ret_val = WriteSubtree(stream, tree->root, traverse_order);
 
     fprintf(stream, "\n");
 
     return ret_val;
+}
+
+// could have written it better
+TreeNode * ReadSubTree (FILE * stream)
+{
+    assert(stream);
+
+    // * assert that tree is in PREORDER
+
+    TreeNode * node = (TreeNode *) calloc(1, sizeof(TreeNode));
+
+    char word[MAX_WORD] = "";
+
+    char * node_data = (char *) calloc(MAX_WORDS, sizeof(word));
+
+    int node_left_readen  = 0;
+    int node_right_readen = 0;
+
+    while (fscanf(stream, "%s", word) != EOF && strcmp(word, ")")) // ? word != ")"
+    {
+        // if while loop didnt encounter ")" in the end of node and kept working, break (we dont shut down program after that)
+        if (node_right_readen)
+        {
+            fprintf(stderr, "Syntax Error! No right bracket found in the end of node sequence!\n");
+
+            break; // as it is PREORDER we dont read anything after right node info
+        }
+
+        if (strcmp(word, "(") == 0)
+        {
+            if (!node_left_readen)
+            {
+                node->left = ReadSubTree(stream);
+                node_left_readen = 1;
+            }
+            else
+            {
+                node->right = ReadSubTree(stream);
+            }
+        }
+        else if (strcmp(word, "nil") == 0)
+        {
+            if (!node_left_readen)
+            {
+                node->left = NULL;
+                node_left_readen = 1;
+            }
+            else
+            {
+                node->right = NULL;
+            }
+        }
+        else
+        {
+            strcat(node_data, word);
+        }
+    }
+    node->data = node_data;
+
+    return node;
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)
