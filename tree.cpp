@@ -99,6 +99,8 @@ int TreeHangLeafSorted (Tree * tree, TreeNode * node, TreeNode * new_node, NodeC
         }
     }
 
+    tree->size++;
+
     return ret_val;
 }
 
@@ -125,7 +127,6 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
             return ret_val;
         }
     }
-
 
     TreeNode * subtree_ptr = NULL;
 
@@ -166,6 +167,8 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
 
         ret_val = 1;
     }
+
+    tree->size++;
 
     return ret_val;
 }
@@ -329,8 +332,10 @@ TreeNode * ReadSubTree (FILE * stream)
         else
         {
             strcat(node_data, word);
+            strcat(node_data, " ");
         }
     }
+
     node->data = node_data;
 
     return node;
