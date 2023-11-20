@@ -1,3 +1,11 @@
+/*************************************************************************
+ * (c) 2023 Tikhonov Yaroslav (aka UjeNeTORT)
+ *
+ * email: tikhonovty@gmail.com
+ * telegram: https://t.me/netortofficial
+ * GitHub repo: https://github.com/UjeNeTORT
+ *************************************************************************/
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
