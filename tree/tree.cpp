@@ -172,7 +172,7 @@ int TreeHangNode (Tree * tree, TreeNode * node, TreeNode * new_node, NodeLocatio
     }
     else if (subtree_location == REPLACE) // we forbid such fucntionality
     {
-        PRINTF_DEBUG("Forbidden to hang subtree onto intself. Choose LEFT or RIGHT\n");
+        fprintf(stderr, "Forbidden to hang subtree onto intself. Choose LEFT or RIGHT\n");
 
         ret_val = 1;
     }
@@ -325,151 +325,7 @@ int WriteTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
     return ret_val;
 }
 
-// could have written it better
 TreeNode * ReadSubTree (FILE * stream)
-{
-    assert(stream);
-
-    // * assert that tree is in PREORDER
-
-    TreeNode * node = TreeNodeCtor(NULL);
-
-    char word[MAX_WORD] = "";
-
-    char * node_data = (char *) calloc(MAX_WORDS, sizeof(word));
-
-    int node_left_readen  = 0;
-    int node_right_readen = 0;
-
-    while (fscanf(stream, "%s", word) != EOF && strcmp(word, ")")) // ? word != ")"
-    {
-        // if while loop didnt encounter ")" in the end of node and kept working, break (we dont shut down program after that)
-        if (node_right_readen)
-        {
-            fprintf(stderr, "Syntax Error! No right bracket found in the end of node sequence!\n");
-
-            break; // as it is PREORDER we dont read anything after right node info
-        }
-
-        if (strcmp(word, "(") == 0)
-        {
-            if (!node_left_readen)
-            {
-                node->left = ReadSubTree(stream);
-                node_left_readen = 1;
-            }
-            else
-            {
-                node->right = ReadSubTree(stream);
-            }
-        }
-        else if (strcmp(word, "nil") == 0)
-        {
-            if (!node_left_readen)
-            {
-                node->left = NULL;
-                node_left_readen = 1;
-            }
-            else
-            {
-                node->right = NULL;
-            }
-        }
-        else
-        {
-            strcat(node_data, word);
-            strcat(node_data, " ");
-        }
-    }
-
-    node->data = node_data;
-
-    return node;
-}
-
-TreeNode * NewReadSubTree(FILE * stream)
-{
-    assert(stream && "stream null pointer");
-
-    int symb = 0;
-
-    TreeNode * node = TreeNodeCtor(NULL);
-
-    while ((symb = fgetc(stream)) != EOF)
-    {
-        PRINTF_DEBUG("Symbol readen: %c (%d)\n", symb, symb);
-        if (symb == ')')
-        {
-            break;
-        }
-        else if (symb == '(')
-        {
-            if (!node->left)
-            {
-                node->left = NewReadSubTree(stream);
-            }
-            else
-            {
-                node->right = NewReadSubTree(stream);
-            }
-        }
-        else if (symb == '"')
-        {
-            if (!node)
-            {
-                fprintf(stderr, "ReadSubtree: No node given (Perhaps missing round brackets)\n");
-
-                return NULL;
-            }
-
-            char * node_data = (char *) calloc(1, MAX_WORD * MAX_WORDS);
-            char * node_data_init = node_data;
-
-            // read data surrounded by quotation marks "data blablabla"
-            while (symb != EOF)
-            {
-                symb = fgetc(stream);
-                *node_data = symb;
-
-                if (symb == '"')
-                {
-                    *node_data = 0;
-
-                    break;
-                }
-                else if (symb == EOF)
-                {
-                    fprintf(stderr, "ReadSubtree: missing closing quotation mark\n");
-
-                    return NULL;
-                }
-
-                node_data++;
-            }
-
-            // symb must be == (")
-
-            node_data_init = (char *) realloc(node_data_init, strlen(node_data_init) + 1); //? is storing data dynamically worth it and does it worth it to realloc array to free unused memory
-
-            node->data = node_data_init;
-        }
-        else if (symb == '*')
-        {
-            // todo here should be nil reader
-        }
-        else if (!isspace(symb))
-        {
-            fprintf(stderr, "Syntax Error. Unknown \"%c\" (%d)\n", symb, symb);
-
-            abort();
-        }
-    }
-
-    return node;
-}
-
-
-TreeNode * NewNewReadSubTree (FILE * stream)
 {
     assert(stream);
 
@@ -482,7 +338,6 @@ TreeNode * NewNewReadSubTree (FILE * stream)
 
     if (symb == '*')
     {
-        PRINTF_DEBUG("nil encountered\n");
         return NULL;
     }
     else if (symb != '(')
@@ -498,8 +353,8 @@ TreeNode * NewNewReadSubTree (FILE * stream)
 
     // stream - right after closing "node_data"
 
-    node->left  = NewNewReadSubTree(stream);
-    node->right = NewNewReadSubTree(stream);
+    node->left  = ReadSubTree(stream);
+    node->right = ReadSubTree(stream);
 
     while ((symb = fgetc(stream)) != ')')
     {
@@ -552,7 +407,7 @@ Tree ReadTree (FILE * stream)
 {
     assert(stream);
 
-    return TreeCtor(NewNewReadSubTree(stream));
+    return TreeCtor(ReadSubTree(stream));
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)
