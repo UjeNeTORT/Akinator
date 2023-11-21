@@ -325,7 +325,7 @@ int WriteTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
     return ret_val;
 }
 
-TreeNode * ReadSubTree (FILE * stream)
+TreeNode * ReadSubtree (FILE * stream)
 {
     assert(stream);
 
@@ -342,7 +342,7 @@ TreeNode * ReadSubTree (FILE * stream)
     }
     else if (symb != '(')
     {
-        fprintf(stderr, "ReadSubTree: unknown action symbol %c (%d)\n", symb, symb);
+        fprintf(stderr, "ReadSubtree: unknown action symbol %c (%d)\n", symb, symb);
 
         abort();
     }
@@ -353,8 +353,8 @@ TreeNode * ReadSubTree (FILE * stream)
 
     // stream - right after closing "node_data"
 
-    node->left  = ReadSubTree(stream);
-    node->right = ReadSubTree(stream);
+    node->left  = ReadSubtree(stream);
+    node->right = ReadSubtree(stream);
 
     while ((symb = fgetc(stream)) != ')')
     {
@@ -407,7 +407,7 @@ Tree ReadTree (FILE * stream)
 {
     assert(stream);
 
-    return TreeCtor(ReadSubTree(stream));
+    return TreeCtor(ReadSubtree(stream));
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)

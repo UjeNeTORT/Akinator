@@ -65,7 +65,7 @@ int WriteTree    (FILE * stream, Tree * tree, TraverseOrder traverse_order);
 int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
 int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
 
-TreeNode* ReadSubTree  (FILE * stream);
+TreeNode* ReadSubtree  (FILE * stream);
 char*     ReadNodeData (FILE * stream);
 Tree      ReadTree     (FILE * stream);
 
