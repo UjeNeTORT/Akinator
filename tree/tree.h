@@ -63,9 +63,12 @@ int       TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeActio
 
 int WriteTree    (FILE * stream, Tree * tree, TraverseOrder traverse_order);
 int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
+int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
 
 TreeNode *ReadSubTree (FILE * stream);
 TreeNode *NewReadSubTree (FILE * stream);
+TreeNode *NewNewReadSubTree (FILE * stream);
+char * ReadNodeData (FILE * stream);
 Tree      ReadTree    (FILE * stream);
 
 int       PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...) __attribute__( (format(printf, 4, 5)) );

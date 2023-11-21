@@ -244,25 +244,19 @@ int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) 
     if (traverse_order == PREORDER)
     {
         ret_val = fprintf(stream, "%s ", node->data); // did not test
-
         WriteSubtree(stream, node->left, traverse_order);
-
         WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == INORDER)
     {
         WriteSubtree(stream, node->left, traverse_order);
-
         ret_val = fprintf(stream, "%s ", node->data); // did not test
-
         WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == POSTORDER)
     {
         WriteSubtree(stream, node->left, traverse_order);
-
         WriteSubtree(stream, node->right, traverse_order);
-
         ret_val = fprintf(stream, "%s ", node->data); // did not test
     }
     else
@@ -281,7 +275,7 @@ int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_orde
 {
     if (node == NULL)
     {
-        fprintf(stream, "nil ");
+        fprintf(stream, "* "); // todo nil
 
         return 0;
     }
@@ -293,25 +287,19 @@ int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_orde
     if (traverse_order == PREORDER)
     {
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
-
-        WriteSubtree(stream, node->left, traverse_order);
-
-        WriteSubtree(stream, node->right, traverse_order);
+        NewWriteSubtree(stream, node->left, traverse_order);
+        NewWriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == INORDER)
     {
-        WriteSubtree(stream, node->left, traverse_order);
-
+        NewWriteSubtree(stream, node->left, traverse_order);
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
-
-        WriteSubtree(stream, node->right, traverse_order);
+        NewWriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == POSTORDER)
     {
-        WriteSubtree(stream, node->left, traverse_order);
-
-        WriteSubtree(stream, node->right, traverse_order);
-
+        NewWriteSubtree(stream, node->left, traverse_order);
+        NewWriteSubtree(stream, node->right, traverse_order);
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
     }
     else
@@ -396,8 +384,6 @@ TreeNode * ReadSubTree (FILE * stream)
 
     node->data = node_data;
 
-    PRINTF_DEBUG("new node[%p] = %s\n", node, node->data);
-
     return node;
 }
 
@@ -407,10 +393,11 @@ TreeNode * NewReadSubTree(FILE * stream)
 
     int symb = 0;
 
-    TreeNode * node = TreeNodeCtor(NULL);;
+    TreeNode * node = TreeNodeCtor(NULL);
 
     while ((symb = fgetc(stream)) != EOF)
     {
+        PRINTF_DEBUG("Symbol readen: %c (%d)\n", symb, symb);
         if (symb == ')')
         {
             break;
@@ -421,22 +408,16 @@ TreeNode * NewReadSubTree(FILE * stream)
             {
                 node->left = NewReadSubTree(stream);
             }
-            else if (!node->right)
-            {
-                node->right = NewReadSubTree(stream);
-            }
             else
             {
-                fprintf(stderr, "ReadSubTree: Non binary structure of subtree\n");
-
-                return NULL;
+                node->right = NewReadSubTree(stream);
             }
         }
         else if (symb == '"')
         {
             if (!node)
             {
-                fprintf(stderr, "ReadSubtree: raw data given without node construction. (Perhaps missing \"()\" around some node)\n");
+                fprintf(stderr, "ReadSubtree: No node given (Perhaps missing round brackets)\n");
 
                 return NULL;
             }
@@ -466,7 +447,7 @@ TreeNode * NewReadSubTree(FILE * stream)
                 node_data++;
             }
 
-            // assume that symb == (")
+            // symb must be == (")
 
             node_data_init = (char *) realloc(node_data_init, strlen(node_data_init) + 1); //? is storing data dynamically worth it and does it worth it to realloc array to free unused memory
 
@@ -474,11 +455,11 @@ TreeNode * NewReadSubTree(FILE * stream)
         }
         else if (symb == '*')
         {
-            // here should be nil reader
+            // todo here should be nil reader
         }
         else if (!isspace(symb))
         {
-            fprintf(stderr, "Syntax Error. Unknown %c\n", symb);
+            fprintf(stderr, "Syntax Error. Unknown \"%c\" (%d)\n", symb, symb);
 
             abort();
         }
@@ -487,11 +468,91 @@ TreeNode * NewReadSubTree(FILE * stream)
     return node;
 }
 
+
+TreeNode * NewNewReadSubTree (FILE * stream)
+{
+    assert(stream);
+
+    int symb = 0;
+
+    while (isspace(symb = fgetc(stream)))
+    {
+        ;
+    }
+
+    if (symb == '*')
+    {
+        PRINTF_DEBUG("nil encountered\n");
+        return NULL;
+    }
+    else if (symb != '(')
+    {
+        fprintf(stderr, "ReadSubTree: unknown action symbol %c (%d)\n", symb, symb);
+
+        abort();
+    }
+
+    // symb = (
+
+    TreeNode * node = TreeNodeCtor(ReadNodeData(stream));
+
+    // stream - right after closing "node_data"
+
+    node->left  = NewNewReadSubTree(stream);
+    node->right = NewNewReadSubTree(stream);
+
+    while ((symb = fgetc(stream)) != ')')
+    {
+        ;
+    }
+
+    return node;
+}
+
+char * ReadNodeData(FILE * stream)
+{
+    assert(stream);
+
+    char symb = 0;
+
+    while (isspace(symb = fgetc(stream)))
+    {
+        ;
+    }
+
+    if (symb != '"')
+    {
+        fprintf(stderr, "ReadNodeData: data has wrong format (missing quotation mark)\n");
+
+        abort();
+    }
+
+    char * node_data = (char *) calloc (MAX_WORDS, MAX_WORD * sizeof(char));
+
+    symb = fgetc(stream);
+
+    while (symb != '"')
+    {
+        strcat(node_data, &symb); // ? crutch?
+
+        symb = fgetc(stream);
+    }
+
+    if (symb != '"')
+    {
+        fprintf(stderr, "ReadNodeData: missing closing quotation mark\n");
+
+        //? abort?
+    }
+
+    return node_data;
+}
+
 Tree ReadTree (FILE * stream)
 {
     assert(stream);
 
-    return TreeCtor(NewReadSubTree(stream));
+    return TreeCtor(NewNewReadSubTree(stream));
 }
 
 int PrintfDebug (const char * funcname, int line, const char * filename, const char * format, ...)
