@@ -7,6 +7,7 @@
  *************************************************************************/
 
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -329,7 +330,7 @@ int WriteTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
 {
     assert(tree);
 
-    int ret_val = WriteSubtree(stream, tree->root, traverse_order);
+    int ret_val = NewWriteSubtree(stream, tree->root, traverse_order);
 
     fprintf(stream, "\n");
 
@@ -414,7 +415,7 @@ TreeNode * NewReadSubTree(FILE * stream)
         {
             break;
         }
-        if (symb == '(')
+        else if (symb == '(')
         {
             if (!node->left)
             {
@@ -431,8 +432,7 @@ TreeNode * NewReadSubTree(FILE * stream)
                 return NULL;
             }
         }
-
-        if (symb == '"')
+        else if (symb == '"')
         {
             if (!node)
             {
@@ -453,26 +453,34 @@ TreeNode * NewReadSubTree(FILE * stream)
                 if (symb == '"')
                 {
                     *node_data = 0;
+
                     break;
+                }
+                else if (symb == EOF)
+                {
+                    fprintf(stderr, "ReadSubtree: missing closing quotation mark\n");
+
+                    return NULL;
                 }
 
                 node_data++;
             }
-            if (symb == EOF)
-            {
-                fprintf(stderr, "ReadSubtree: missing closing quotation mark\n");
-
-                return NULL;
-            }
 
             // assume that symb == (")
-
-            PRINTF_DEBUG("node_data_ini = %s\n", node_data_init);
 
             node_data_init = (char *) realloc(node_data_init, strlen(node_data_init) + 1); //? is storing data dynamically worth it and does it worth it to realloc array to free unused memory
 
             node->data = node_data_init;
+        }
+        else if (symb == '*')
+        {
+            // here should be nil reader
+        }
+        else if (!isspace(symb))
+        {
+            fprintf(stderr, "Syntax Error. Unknown %c\n", symb);
 
+            abort();
         }
     }
 
