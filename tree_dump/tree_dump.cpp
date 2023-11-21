@@ -70,10 +70,10 @@ int WriteHTML (const char * HTML_fname, int dump_id, size_t err_vec)
 
     fprintf (HTML_file, "<p style=\"font-family:monospace; font-size: 20px\">[%s]\nTREE DUMP of \"s\" called from s (d) from s</p>", asctime(loc_time));
 
-    fprintf (HTML_file, "<img src=\"./%sgraph_dump_%d.png\">\n", GRAPH_PNGS_PATH, dump_id);
+    fprintf (HTML_file, "<img src=\"../../../%sgraph_dump_%d.png\">\n", GRAPH_PNGS_PATH, dump_id);
 
-    fprintf (HTML_file, "<hr>\n");
-    fprintf (HTML_file, "<hr>\n");
+    fprintf (HTML_file, "<hr> <!-- ================================================================= --> <hr>\n");
+    fprintf (HTML_file, "\n");
 
     fclose (HTML_file);
 

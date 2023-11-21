@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "../tree.h"
+#include "../tree/tree.h"
 
 const char DOT_FILE_PATH[]   = "tree_dump/dumps/dot_files/";
 const char GRAPH_PNGS_PATH[] = "tree_dump/dumps/png/";
