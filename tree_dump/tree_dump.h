@@ -1,3 +1,11 @@
+/*************************************************************************
+ * (c) 2023 Tikhonov Yaroslav (aka UjeNeTORT)
+ *
+ * email: tikhonovty@gmail.com
+ * telegram: https://t.me/netortofficial
+ * GitHub repo: https://github.com/UjeNeTORT
+ *************************************************************************/
+
 #ifndef TREE_DUMP_H
 #define TREE_DUMP_H
 
@@ -13,9 +21,9 @@ const int DOT_CODE_BUF_SIZE = 15000;
 
 const int COMMAND_BUF_SIZE = 150;
 
-int TreeDump        (const char * fname, Tree * tree);
-int DotTreePrint    (const char * dot_fname, Tree * tree);
+int TreeDump        (const char * fname, const Tree * tree);
+int DotTreePrint    (const char * dot_fname, const Tree * tree);
 int WriteHTML       (const char * HTML_fname, int dump_id, size_t err_vec);
-int DotSubtreePrint (FILE * stream, TreeNode * node);
+int DotSubtreePrint (FILE * stream, const TreeNode * node);
 
 #endif // TREE_DUMP_H
