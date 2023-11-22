@@ -21,10 +21,10 @@ const int DOT_CODE_BUF_SIZE = 15000;
 
 const int COMMAND_BUF_SIZE = 150;
 
-const char * GRAPH_BACKGROUND = "#006D77";
-const char * GRAPH_TEXTCLR    = "#EDF6F9";
-const char * GRAPH_CONDCLR    = "#83C5BE";
-const char * GRAPH_ANSWCLR    = "#E29578";
+const char GRAPH_BACKGROUND[] = "#006D77";
+const char GRAPH_TEXTCLR[]    = "#EDF6F9";
+const char GRAPH_CONDCLR[]    = "#83C5BE";
+const char GRAPH_ANSWCLR[]    = "#E29578";
 
 int TreeDump        (const char * fname, const Tree * tree);
 int DotTreePrint    (const char * dot_fname, const Tree * tree);
