@@ -15,11 +15,6 @@
 
 #include "tree_dump.h"
 
-const char * GRAPH_BACKGROUND = "#006D77";
-const char * GRAPH_TEXTCLR    = "#EDF6F9";
-const char * GRAPH_CONDCLR    = "#83C5BE";
-const char * GRAPH_ANSWCLR    = "#E29578";
-
 int TreeDump (const char * fname, const Tree * tree)
 {
     assert (fname);
