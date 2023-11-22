@@ -8,8 +8,11 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "akinator.h"
+
+#define streq(s1, s2) (!strcmp((s1), (s2)))
 
 Tree ReadGuessTree (const char * tree_path)
 {
@@ -48,10 +51,38 @@ int DrawGuessTree (const char * fname, const Tree * tree)
     return TreeDump (fname, tree);
 }
 
-char * AkinatorGuess (TreeNode * start_node)
+int AkinatorGuess (TreeNode * node, FILE * user_stream)
 {
-    char * guess_res = NULL;
 
+    if (!node)
+    {
+        fprintf(stdout, "Oops! No such thing in my database! What is the difference between"); !!!
+    }
+    int guess_res = NULL;
+
+    //!
+
+    fprintf(stdout, "Does it have property \"%s\"?", node->data);
+
+    char * user_answ = NULL;
+
+    fscanf(user_stream, "%s", user_answ);
+
+    if (streq(user_answ, "yes"))
+    {
+        guess_res = AkinatorGuess(node->right, user_stream);
+    }
+    else if (streq(user_answ, "no"))
+    {
+        guess_res = AkinatorGuess(node->left, user_stream);
+    }
+    else if (streq(user_answ, "q"))
+    {
+        // todo quit actions
+        return guess_res;
+    }
+
+    //!
 
     return guess_res;
 }

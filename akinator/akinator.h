@@ -16,4 +16,7 @@ Tree ReadGuessTree  (const char * tree_filename);
 int  WriteGuessTree (const char * tree_path, const Tree * tree);
 int  DrawGuessTree  (const char * fname, const Tree * tree);
 
+int AkinatorGuess (TreeNode * node, FILE * user_stream);
+
+
 #endif // AKINATOR_H
