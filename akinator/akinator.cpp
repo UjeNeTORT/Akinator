@@ -10,7 +10,6 @@
 #include <stdio.h>
 
 #include "akinator.h"
-#include "../tree_dump/tree_dump.h"
 
 Tree ReadGuessTree (const char * tree_path)
 {

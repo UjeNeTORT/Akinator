@@ -10,6 +10,7 @@
 #define AKINATOR_H
 
 #include "../tree/tree.h"
+#include "../tree_dump/tree_dump.h"
 
 Tree ReadGuessTree  (const char * tree_filename);
 int  WriteGuessTree (const char * tree_path, const Tree * tree);
