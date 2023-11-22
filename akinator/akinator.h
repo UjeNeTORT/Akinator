@@ -11,6 +11,8 @@
 
 #include "../tree/tree.h"
 
-Tree ReadGuessTree (const char * tree_filename);
+Tree ReadGuessTree  (const char * tree_filename);
+int  WriteGuessTree (const char * tree_path, const Tree * tree);
+int  DrawGuessTree  (const char * fname, const Tree * tree);
 
 #endif // AKINATOR_H
