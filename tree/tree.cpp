@@ -228,50 +228,7 @@ int TraverseTree (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_o
     return TraverseTreeFrom(tree, tree->root, NodeAction, traverse_order);
 }
 
-int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
-{
-    if (node == NULL)
-    {
-        fprintf(stream, "nil ");
-
-        return 0;
-    }
-
-    int ret_val = 0;
-
-    fprintf(stream, "( ");
-
-    if (traverse_order == PREORDER)
-    {
-        ret_val = fprintf(stream, "%s ", node->data); // did not test
-        WriteSubtree(stream, node->left, traverse_order);
-        WriteSubtree(stream, node->right, traverse_order);
-    }
-    else if (traverse_order == INORDER)
-    {
-        WriteSubtree(stream, node->left, traverse_order);
-        ret_val = fprintf(stream, "%s ", node->data); // did not test
-        WriteSubtree(stream, node->right, traverse_order);
-    }
-    else if (traverse_order == POSTORDER)
-    {
-        WriteSubtree(stream, node->left, traverse_order);
-        WriteSubtree(stream, node->right, traverse_order);
-        ret_val = fprintf(stream, "%s ", node->data); // did not test
-    }
-    else
-    {
-        fprintf(stream, "ErrOrdr");
-
-        ret_val = -1;
-    }
-
-    fprintf(stream, ") ");
-
-    return ret_val;
-}
-
-int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
+int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
 {
     if (node == NULL)
     {
@@ -287,19 +244,19 @@ int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_orde
     if (traverse_order == PREORDER)
     {
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
-        NewWriteSubtree(stream, node->left, traverse_order);
-        NewWriteSubtree(stream, node->right, traverse_order);
+        WriteSubtree(stream, node->left, traverse_order);
+        WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == INORDER)
     {
-        NewWriteSubtree(stream, node->left, traverse_order);
+        WriteSubtree(stream, node->left, traverse_order);
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
-        NewWriteSubtree(stream, node->right, traverse_order);
+        WriteSubtree(stream, node->right, traverse_order);
     }
     else if (traverse_order == POSTORDER)
     {
-        NewWriteSubtree(stream, node->left, traverse_order);
-        NewWriteSubtree(stream, node->right, traverse_order);
+        WriteSubtree(stream, node->left, traverse_order);
+        WriteSubtree(stream, node->right, traverse_order);
         ret_val = fprintf(stream, "\"%s\" ", node->data); // did not test
     }
     else
@@ -314,11 +271,11 @@ int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_orde
     return ret_val;
 }
 
-int WriteTree (FILE * stream, Tree * tree, TraverseOrder traverse_order)
+int WriteTree (FILE * stream, const Tree * tree, TraverseOrder traverse_order)
 {
     assert(tree);
 
-    int ret_val = NewWriteSubtree(stream, tree->root, traverse_order);
+    int ret_val = WriteSubtree(stream, tree->root, traverse_order);
 
     fprintf(stream, "\n");
 

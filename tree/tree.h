@@ -1,9 +1,17 @@
+/*************************************************************************
+ * (c) 2023 Tikhonov Yaroslav (aka UjeNeTORT)
+ *
+ * email: tikhonovty@gmail.com
+ * telegram: https://t.me/netortofficial
+ * GitHub repo: https://github.com/UjeNeTORT
+ *************************************************************************/
+
 #ifndef TREE_H
 #define TREE_H
 
 #include <stdio.h>
 
-const int POISON   = 0xD00D1E;
+const int POISON    = 0xD00D1E;
 const int MAX_WORD  = 100; // maximum length of a word allowed
 const int MAX_WORDS = 100; // maximum words allowed to get stored in data
 
@@ -61,9 +69,8 @@ int       DeleteSubtree (Tree * tree, TreeNode * node);
 int       TraverseTree     (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order);
 int       TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, TraverseOrder traverse_order);
 
-int WriteTree    (FILE * stream, Tree * tree, TraverseOrder traverse_order);
-int WriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
-int NewWriteSubtree (FILE * stream, TreeNode * node, TraverseOrder traverse_order);
+int WriteTree    (FILE * stream, const Tree * tree, TraverseOrder traverse_order);
+int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order);
 
 TreeNode* ReadSubtree  (FILE * stream);
 char*     ReadNodeData (FILE * stream);
