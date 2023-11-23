@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "akinator.h"
@@ -51,38 +52,108 @@ int DrawGuessTree (const char * fname, const Tree * tree)
     return TreeDump (fname, tree);
 }
 
-int AkinatorGuess (TreeNode * node, FILE * user_stream)
+int AkinatorSubtreeGuess (TreeNode * node, TreeNode * previous, FILE * user_stream)
 {
+    int tree_changed = 0;
 
     if (!node)
     {
-        fprintf(stdout, "Oops! No such thing in my database! What is the difference between"); !!!
+        fprintf(stdout, "Oops! No such thing in my database! What was it?\n>> ");
+        char user_answ[MAX_WORD] = "";
+
+        fgets(user_answ, MAX_WORD, user_stream);
+
+        if (!previous->left)
+        {
+            previous->left = TreeNodeCtor(user_answ);
+        }
+        else if (!previous->right)
+        {
+            previous->right = TreeNodeCtor(user_answ);
+        }
+
+        tree_changed = 1;
+
+        return tree_changed;
     }
-    int guess_res = NULL;
 
-    //!
-
-    fprintf(stdout, "Does it have property \"%s\"?", node->data);
-
-    char * user_answ = NULL;
-
-    fscanf(user_stream, "%s", user_answ);
-
-    if (streq(user_answ, "yes"))
+    if (node->left || node->right)
     {
-        guess_res = AkinatorGuess(node->right, user_stream);
+        fprintf(stdout, "Does it have property \"%s\"?\n>> ", node->data);
+
+        char user_answ[MAX_YES_NO] = "";
+        fscanf(user_stream, "%s", user_answ);
+        fgetc(user_stream); // hanging \n
+
+        if (streq(user_answ, "yes") || streq(user_answ, "y"))
+        {
+            tree_changed = AkinatorSubtreeGuess(node->right, node, user_stream);
+        }
+        else if (streq(user_answ, "no") || streq(user_answ, "n"))
+        {
+            tree_changed = AkinatorSubtreeGuess(node->left, node, user_stream);
+        }
+        else if (streq(user_answ, "q"))
+        {
+            // todo quit actions
+            return tree_changed = 2; // quit while loop
+        }
     }
-    else if (streq(user_answ, "no"))
+    else
     {
-        guess_res = AkinatorGuess(node->left, user_stream);
-    }
-    else if (streq(user_answ, "q"))
-    {
-        // todo quit actions
-        return guess_res;
+        fprintf(stdout, "Is that %s?\n>> ", node->data);
+
+        char user_answ[MAX_YES_NO] = "";
+
+        fscanf(user_stream, "%s", user_answ);
+        fgetc(user_stream); // hanging \n
+
+        if (streq(user_answ, "yes") || streq(user_answ, "y"))
+        {
+            fprintf(stdout, "Hooray!\n");
+
+            tree_changed = 0; // 0 - not changed
+        }
+        else if (streq(user_answ, "no") || streq(user_answ, "n"))
+        {
+            char new_data[MAX_WORD] = "";
+            fprintf(stdout, "Ohhh NO! What was it?\n>> ");
+            fgets(new_data, MAX_WORD, user_stream);
+            new_data[strcspn(new_data, "\r\n")] = 0;
+
+            char difference[MAX_WORD] = "";
+            fprintf(stdout, "What is the difference between \"%s\" and \"%s\"?\n>> ", new_data, node->data);
+            fgets(difference, MAX_WORD, user_stream);
+            difference[strcspn(difference, "\r\n")] = 0;
+
+            TreeNode * difference_node = TreeNodeCtor(difference);
+            TreeNode * new_node        = TreeNodeCtor(new_data);
+
+            if (node == previous->left) // if we are in left subtree of previous
+            {
+                previous->left = difference_node;
+            }
+            else if (node == previous->right)
+            {
+                previous->right = difference_node;
+            }
+
+            difference_node->left  = node;
+            difference_node->right = new_node;
+
+            tree_changed = 1; // changed
+
+            fprintf(stdout, "Okay, now i know...\n");
+        }
     }
 
-    //!
+    return tree_changed;
+}
 
-    return guess_res;
+int AkinatorTreeGuess (Tree * tree, FILE * user_stream)
+{
+    assert(tree);
+    assert(user_stream);
+
+    return AkinatorSubtreeGuess(tree->root, NULL, user_stream);
 }
