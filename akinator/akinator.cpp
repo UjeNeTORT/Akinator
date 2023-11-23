@@ -176,14 +176,11 @@ int AkinatorTreeDefine (Tree * tree, char * term)
     stack * path = TreeNodePath(tree, dst_node);
 
     TreeNode * curr_node = NULL;
-    PRINTF_DEBUG("hello babe\n");
     curr_node = tree->root;
-    PRINTF_DEBUG("path->size = %d\n", path->size);
 
     while(path->size > 0)
     {
-
-        if (PopStack(path, NULL) == 0)
+        if (PopStack(path) == 0)
         {
             fprintf(stdout, "\tnot %s\n", curr_node->data);
             curr_node = curr_node->left;
