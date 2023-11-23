@@ -5,23 +5,31 @@ CFLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equ
 -Wtype-limits -Wwrite-strings -Werror=vla -D_DEBUG -D_EJUDGE_CLIENT_SIDE -fsanitize=address
 
 TARGET = ./test.exe
-COMPILER = g++
+MAIN = ./main.exe
+CPP = g++
 
-start: tree.o tree_dump.o akinator.o test.o
-	$(COMPILER) tree.o tree_dump.o akinator.o test.o -o $(TARGET) $(CFLAGS)
-	$(TARGET)
+start: stack.o tree.o tree_dump.o akinator.o main.o
+	$(CPP) stack.o my_hash.o tree.o tree_dump.o akinator.o main.o -o $(MAIN) $(CFLAGS)
+	$(MAIN)
+
+stack.o : stack/stack.cpp
+	$(CPP) stack/stack.cpp -c
+	$(CPP) stack/my_hash.cpp -c
 
 tree.o : tree/tree.cpp
-	$(COMPILER) tree/tree.cpp -c
+	$(CPP) tree/tree.cpp -c
 
 tree_dump.o : tree_dump/tree_dump.cpp
-	$(COMPILER) tree_dump/tree_dump.cpp -c
+	$(CPP) tree_dump/tree_dump.cpp -c
 
 akinator.o : akinator/akinator.cpp
-	$(COMPILER) akinator/akinator.cpp -c
+	$(CPP) akinator/akinator.cpp -c
 
 test.o : test.cpp
-	$(COMPILER) test.cpp -c
+	$(CPP) test.cpp -c
+
+main.o : main.cpp
+	$(CPP) main.cpp -c
 
 clean:
 	rm -f $(TARGET)
