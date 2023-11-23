@@ -122,6 +122,8 @@ stack * StackCtor(int capacity, stk_debug_info debug_info) {
 
     StackDataCalloc(&stk->data, capacity);
 
+    UpdStackHash(stk);
+
     StackPoison(stk, debug_info);
 
     UpdStackHash(stk);
@@ -212,13 +214,9 @@ enum PUSH_OUT StackPush(stack *stk, Elem_t value, stk_debug_info debug_info) {
 }
 
 //-------------------------------------------------------------------------------------
-Elem_t StackPop(stack *stk, enum POP_OUT *err, stk_debug_info debug_info) {
-
-    *err = POP_NO_ERR;
+Elem_t StackPop(stack *stk, stk_debug_info debug_info) {
 
     ASSERT_STACK(stk, debug_info);
-    if (StackErr(stk))
-        *err = POP_ERR_SIDE;
 
     int new_capacity = GetNewCapacity(stk, debug_info);
 
@@ -232,15 +230,11 @@ Elem_t StackPop(stack *stk, enum POP_OUT *err, stk_debug_info debug_info) {
 
     UpdStackHash(stk);
     ASSERT_STACK(stk, debug_info);
-    if (StackErr(stk))
-        *err = POP_ERR;
 
     StackPoison(stk, debug_info);
 
     UpdStackHash(stk);
     ASSERT_STACK(stk, debug_info);
-    if (StackErr(stk))
-        *err = POP_ERR;
 
     return ret_value;
 }
@@ -553,7 +547,7 @@ static int GetNewCapacity(stack *stk, stk_debug_info debug_info) {
 
     ASSERT_STACK(stk, debug_info);
 
-    if (stk->size + 1 >= (int) stk->capacity * 3 / 4)
+    if (stk->size + 1 >= (int) stk->capacity)
         return stk->capacity * 2;
 
     if (stk->size - 1 <= (int) stk->capacity / 4 + 1 && stk->capacity > stk->init_capacity)

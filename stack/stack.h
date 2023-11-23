@@ -225,10 +225,9 @@ StackPush(stack          *stk,
 */
 Elem_t
 StackPop(stack          *stk,
-         enum POP_OUT   *err,
          stk_debug_info debug_info);
 
-#define PopStack(stk, err) StackPop(stk, err, DEBUG_INFO(stk))
+#define PopStack(stk) StackPop(stk, DEBUG_INFO(stk))
 
 //-------------------------------------------------------------------------------------
 /**
