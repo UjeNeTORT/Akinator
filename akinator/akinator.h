@@ -21,5 +21,7 @@ int  DrawGuessTree  (const char * fname, const Tree * tree);
 int AkinatorSubtreeGuess (TreeNode * node, TreeNode * previous, FILE * user_stream);
 int AkinatorTreeGuess (Tree * tree, FILE * user_stream);
 
+int AkinatorTreeDefine (Tree * tree, char * term);
+
 
 #endif // AKINATOR_H

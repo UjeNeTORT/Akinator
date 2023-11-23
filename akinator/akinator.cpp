@@ -116,12 +116,12 @@ int AkinatorSubtreeGuess (TreeNode * node, TreeNode * previous, FILE * user_stre
         }
         else if (streq(user_answ, "no") || streq(user_answ, "n"))
         {
-            char new_data[MAX_WORD] = "";
+            char * new_data = (char *) calloc (MAX_WORD, sizeof(char));
             fprintf(stdout, "Ohhh NO! What was it?\n>> ");
             fgets(new_data, MAX_WORD, user_stream);
             new_data[strcspn(new_data, "\r\n")] = 0;
 
-            char difference[MAX_WORD] = "";
+            char * difference = (char *) calloc (MAX_WORD, sizeof(char));
             fprintf(stdout, "What is the difference between \"%s\" and \"%s\"?\n>> ", new_data, node->data);
             fgets(difference, MAX_WORD, user_stream);
             difference[strcspn(difference, "\r\n")] = 0;
@@ -156,4 +156,46 @@ int AkinatorTreeGuess (Tree * tree, FILE * user_stream)
     assert(user_stream);
 
     return AkinatorSubtreeGuess(tree->root, NULL, user_stream);
+}
+
+int AkinatorTreeDefine (Tree * tree, char * term)
+{
+    assert(tree);
+    assert(term);
+
+    TreeNode * dst_node = TreeFind(tree, term);
+    if (!dst_node)
+    {
+        fprintf(stdout, "No such term in tree (%s not found)\n", term);
+
+        return 1; // not found
+    }
+
+    fprintf(stdout, "%s has following properties:\n", term);
+
+    stack * path = TreeNodePath(tree, dst_node);
+
+    TreeNode * curr_node = NULL;
+    PRINTF_DEBUG("hello babe\n");
+    curr_node = tree->root;
+    PRINTF_DEBUG("path->size = %d\n", path->size);
+
+    while(path->size > 0)
+    {
+
+        if (PopStack(path, NULL) == 0)
+        {
+            fprintf(stdout, "\tnot %s\n", curr_node->data);
+            curr_node = curr_node->left;
+        }
+        else
+        {
+            fprintf(stdout, "\t%s\n", curr_node->data);
+            curr_node = curr_node->right;
+        }
+    }
+
+    DtorStack(path);
+
+    return 0; // found
 }
