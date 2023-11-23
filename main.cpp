@@ -21,6 +21,7 @@ const int MAX_TREEPATH_LEN = 100;
 #define streq(s1, s2) (!strcmp((s1), (s2)))
 
 int DoGuessMode(Tree * tree, const char * tree_path, FILE * user_stream);
+int DoDefineMode(Tree * tree, FILE * user_stream);
 
 int main()
 {
@@ -42,12 +43,7 @@ int main()
     }
     else if (streq(prog_mode, "d") || streq(prog_mode, "define"))
     {
-        char term[MAX_WORD] = "";
-        fprintf(stdout, "What to define?\n>> ");
-        fscanf(user_stream, "%s", term);
-        fgetc(user_stream);
-
-
+        DoDefineMode(&tree, user_stream);
     }
     else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
     {
@@ -59,6 +55,7 @@ int main()
     }
 
     DrawGuessTree("dump.html", &tree);
+
     TreeDtor(&tree);
 
     fprintf(stdout, "Goodbye!\n");
@@ -100,7 +97,12 @@ int DoGuessMode(Tree * tree, const char * tree_path, FILE * user_stream)
     return 0;
 }
 
-int DoDefineMode()
+int DoDefineMode(Tree * tree, FILE * user_stream)
 {
+    char term[MAX_WORD] = "";
+    fprintf(stdout, "What to define?\n>> ");
+    fscanf(user_stream, "%s", term);
+    fgetc(user_stream);
 
+    return AkinatorTreeDefine(tree, term);
 }
