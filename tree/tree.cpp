@@ -228,6 +228,80 @@ int TraverseTree (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_o
     return TraverseTreeFrom(tree, tree->root, NodeAction, traverse_order);
 }
 
+TreeNode * SubtreeFind (TreeNode * node, char * val)
+{
+    assert(val);
+
+    if (!node)
+    {
+        return NULL;
+    }
+
+    if (streq(node->data, val))
+    {
+        return node;
+    }
+
+    TreeNode * res = NULL;
+
+    return ((res = SubtreeFind(node->left, val)) == NULL) ? SubtreeFind(node->right, val) : res;
+}
+
+TreeNode * TreeFind (Tree * tree, char * val)
+{
+    assert(tree);
+    assert(val);
+
+    return SubtreeFind(tree->root, val);
+}
+
+int SubtreeNodePath (TreeNode * node, TreeNode * dst_node, stack * path)
+{
+    assert(dst_node);
+
+    int ret_val = 0;
+
+    if (!node)
+    {
+        return 1; // not found
+    }
+
+    if (node == dst_node)
+    {
+        return 0; // found
+    }
+
+    if (!SubtreeFind(node, dst_node->data))
+    {
+        return 1; // not found
+    }
+
+    if (SubtreeFind(node->left, dst_node->data))
+    {
+        PushStack(path, 0); // left
+        ret_val = SubtreeNodePath(node->left, dst_node, path);
+    }
+    else
+    {
+        PushStack(path, 1); // right
+        ret_val = SubtreeNodePath(node->right, dst_node, path);
+    }
+
+    return ret_val; // found
+}
+
+stack * TreeNodePath (Tree * tree, TreeNode * dst_node)
+{
+    assert(tree);
+    assert(dst_node);
+
+    stack * path = CtorStack(MAX_TREE_PATH);
+
+    SubtreeNodePath(tree->root, dst_node, path);
+
+    return path;
+}
+
 int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
 {
     if (node == NULL)
@@ -371,7 +445,7 @@ int PrintfDebug (const char * funcname, int line, const char * filename, const c
 {
     assert(format);
 
-    fprintf(stderr, BLACK_CLR "[DEBUG MESSAGE %s %d %s]\n<< ", funcname, line, filename);
+    fprintf(stderr, GREEN_CLR "[DEBUG MESSAGE %s %d %s]\n<< ", funcname, line, filename);
 
     va_list ptr;
 

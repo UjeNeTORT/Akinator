@@ -11,9 +11,14 @@
 
 #include <stdio.h>
 
-const int POISON    = 0xD00D1E;
+#include "../stack/stack.h"
+
+#define streq(s1, s2) (!strcmp((s1), (s2)))
+
+const int TREE_POISON = 0xD00D1E;
 const int MAX_WORD  = 100; // maximum length of a word allowed
 const int MAX_WORDS = 100; // maximum words allowed to get stored in data
+const int MAX_TREE_PATH = 100; // maximum words allowed to get stored in data
 
 #define PRINTF_DEBUG(format, ...) \
     PrintfDebug (__PRETTY_FUNCTION__, __LINE__, __FILE__, format __VA_OPT__(,) __VA_ARGS__)
@@ -68,6 +73,12 @@ int       DeleteSubtree (Tree * tree, TreeNode * node);
 
 int       TraverseTree     (Tree * tree, NodeAction_t NodeAction, TraverseOrder traverse_order);
 int       TraverseTreeFrom (Tree * tree, TreeNode * node, NodeAction_t NodeAction, TraverseOrder traverse_order);
+
+TreeNode * SubtreeFind (TreeNode * node, char * val);
+TreeNode * TreeFind (Tree * tree, char * val);
+
+int     SubtreeNodePath (TreeNode * node, TreeNode * dst_node, stack * path);
+stack * TreeNodePath (Tree * tree, TreeNode * dst_node);
 
 int WriteTree    (FILE * stream, const Tree * tree, TraverseOrder traverse_order);
 int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order);
