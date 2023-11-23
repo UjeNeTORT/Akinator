@@ -25,17 +25,19 @@ int DoDefineMode(Tree * tree, FILE * user_stream);
 
 int main()
 {
-    fprintf(stdout, "Hello! What do you want from me? [guess (g) | define (d) | compare (c) | call you a clown ()]\n>> ");
-
     FILE * user_stream = stdin;
-    char prog_mode[MAX_PROGMODE_LEN] = "";
-    fscanf(user_stream, "%s", prog_mode);
 
     char tree_path[MAX_TREEPATH_LEN] = "";
-    fprintf(stdout, "Now specify the tree to work with\n>> ");
+    fprintf(stdout, "Hello! Specify tree to work with\n>> ");
     fscanf(user_stream, "%s", tree_path);
     // todo check if tree path is correct
     Tree tree = ReadGuessTree(tree_path);
+
+    fprintf(stdout, "What do you want from me? [guess (g) | define (d) | compare (c) | call you a clown ()]\n>> ");
+
+    char prog_mode[MAX_PROGMODE_LEN] = "";
+    fscanf(user_stream, "%s", prog_mode);
+    fgetc(user_stream); // hanging \n
 
     if (streq(prog_mode, "g") || streq(prog_mode, "guess"))
     {
@@ -101,8 +103,8 @@ int DoDefineMode(Tree * tree, FILE * user_stream)
 {
     char term[MAX_WORD] = "";
     fprintf(stdout, "What to define?\n>> ");
-    fscanf(user_stream, "%s", term);
-    fgetc(user_stream);
+    fgets(term, MAX_WORD, user_stream);
+    term[strcspn(term, "\r\n")] = 0;
 
     return AkinatorTreeDefine(tree, term);
 }
