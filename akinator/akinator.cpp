@@ -174,13 +174,18 @@ int AkinatorTreeDefine (Tree * tree, char * term)
     fprintf(stdout, "%s has following properties:\n", term);
 
     stack * path = TreeNodePath(tree, dst_node);
+    stack * back_path = CtorStack(path->size); //? seems like crutch
+    while (path->size > 0)
+    {
+        PushStack(back_path, PopStack(path));
+    }
 
     TreeNode * curr_node = NULL;
     curr_node = tree->root;
 
-    while(path->size > 0)
+    while(back_path->size > 0)
     {
-        if (PopStack(path) == 0)
+        if (PopStack(back_path) == 0)
         {
             fprintf(stdout, "\tnot %s\n", curr_node->data);
             curr_node = curr_node->left;
@@ -192,6 +197,7 @@ int AkinatorTreeDefine (Tree * tree, char * term)
         }
     }
 
+    DtorStack(back_path);
     DtorStack(path);
 
     return 0; // found
