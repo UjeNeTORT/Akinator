@@ -24,6 +24,8 @@ const char * TREE_DATABASE = "akinator/database/";
 
 int DoGuessMode(Tree * tree, const char * tree_path, FILE * user_stream);
 int DoDefineMode(Tree * tree, FILE * user_stream);
+int DoCompareMode(Tree * tree, FILE * user_stream);
+
 stack * BuildDefinitionStack (Tree * tree, char * term);
 
 int main()
@@ -52,7 +54,7 @@ int main()
     }
     else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
     {
-        !!!
+        DoCompareMode(&tree, user_stream);
     }
     else
     {
@@ -137,26 +139,27 @@ int DoCompareMode(Tree * tree, FILE * user_stream)
 
     TreeNode * difference = tree->root;
 
+    fprintf(stdout, "Both %s and %s have properties:\n", first, second);
     while ((turn = PopStack(first_path)) == PopStack(second_path))
     {
         *similarities++ = difference->data;
 
         if (turn == 0)
         {
+            fprintf(stdout, "\tnot %s\n", difference->data);
             difference = difference->left;
         }
         else
         {
+            fprintf(stdout, "\t%s\n", difference->data);
             difference = difference->right;
         }
     }
 
     similarities = similarities_init;
 
-    fprintf(stdout, "Both %s and %s have properties:\n", first, second);
     while (*similarities)
     {
-        fprintf(stdout, "\t%s\n", *similarities);
         similarities++;
     }
 
