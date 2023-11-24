@@ -52,59 +52,7 @@ int main()
     }
     else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
     {
-        char first[MAX_WORD] = "";
-        fprintf(stdout, "First term?\n>> ");
-        fgets(first, MAX_WORD, user_stream);
-        first[strcspn(first, "\r\n")] = 0;
-
-        char second[MAX_WORD] = "";
-        fprintf(stdout, "Second term?\n>> ");
-        fgets(second, MAX_WORD, user_stream);
-        second[strcspn(second, "\r\n")] = 0;
-
-        stack * first_path  = BuildDefinitionStack (&tree, first);
-        stack * second_path = BuildDefinitionStack (&tree, second);
-
-        int turn = 0;
-
-        char ** similarities = (char **) calloc (MAX_TREE_PATH, sizeof(char *));
-        char ** similarities_init = similarities;
-
-        TreeNode * difference = tree.root;
-
-        while ((turn = PopStack(first_path)) == PopStack(second_path))
-        {
-            *similarities++ = difference->data;
-
-            if (turn == 0)
-            {
-                difference = difference->left;
-            }
-            else
-            {
-                difference = difference->right;
-            }
-        }
-
-        similarities = similarities_init;
-
-        fprintf(stdout, "Both %s and %s have properties:\n", first, second);
-        while (*similarities)
-        {
-            fprintf(stdout, "\t%s\n", *similarities);
-            similarities++;
-        }
-
-        fprintf(stdout, "But %s has following properties:\n", first);
-        AkinatorSubtreeDefine(difference, first);
-
-        fprintf(stdout, "Whereas %s has following properties:\n", second);
-        AkinatorSubtreeDefine(difference, second);
-
-        free(similarities_init);
-
-        DtorStack(first_path);
-        DtorStack(second_path);
+        !!!
     }
     else
     {
@@ -164,6 +112,68 @@ int DoDefineMode(Tree * tree, FILE * user_stream)
     return AkinatorTreeDefine(tree, term);
 }
 
+int DoCompareMode(Tree * tree, FILE * user_stream)
+{
+    assert(tree);
+    assert(user_stream);
+
+    char first[MAX_WORD] = "";
+    fprintf(stdout, "First term?\n>> ");
+    fgets(first, MAX_WORD, user_stream);
+    first[strcspn(first, "\r\n")] = 0;
+
+    char second[MAX_WORD] = "";
+    fprintf(stdout, "Second term?\n>> ");
+    fgets(second, MAX_WORD, user_stream);
+    second[strcspn(second, "\r\n")] = 0;
+
+    stack * first_path  = BuildDefinitionStack (tree, first);
+    stack * second_path = BuildDefinitionStack (tree, second);
+
+    int turn = 0;
+
+    char ** similarities = (char **) calloc (MAX_TREE_PATH, sizeof(char *));
+    char ** similarities_init = similarities;
+
+    TreeNode * difference = tree->root;
+
+    while ((turn = PopStack(first_path)) == PopStack(second_path))
+    {
+        *similarities++ = difference->data;
+
+        if (turn == 0)
+        {
+            difference = difference->left;
+        }
+        else
+        {
+            difference = difference->right;
+        }
+    }
+
+    similarities = similarities_init;
+
+    fprintf(stdout, "Both %s and %s have properties:\n", first, second);
+    while (*similarities)
+    {
+        fprintf(stdout, "\t%s\n", *similarities);
+        similarities++;
+    }
+
+    fprintf(stdout, "But %s has following properties:\n", first);
+    AkinatorSubtreeDefine(difference, first);
+
+    fprintf(stdout, "Whereas %s has following properties:\n", second);
+    AkinatorSubtreeDefine(difference, second);
+
+    free(similarities_init);
+
+    DtorStack(first_path);
+    DtorStack(second_path);
+
+    return 0;
+}
+
 stack * BuildDefinitionStack (Tree * tree, char * term)
 {
     TreeNode * dst_node = TreeFind(tree, term);
@@ -185,3 +195,4 @@ stack * BuildDefinitionStack (Tree * tree, char * term)
 
     return back_path;
 }
+
