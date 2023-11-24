@@ -54,6 +54,8 @@ int DrawGuessTree (const char * fname, const Tree * tree)
 
 int AkinatorSubtreeGuess (TreeNode * node, TreeNode * previous, FILE * user_stream)
 {
+    assert(user_stream);
+
     int tree_changed = 0;
 
     if (!node)
@@ -158,30 +160,29 @@ int AkinatorTreeGuess (Tree * tree, FILE * user_stream)
     return AkinatorSubtreeGuess(tree->root, NULL, user_stream);
 }
 
-int AkinatorTreeDefine (Tree * tree, char * term)
+int AkinatorSubtreeDefine (TreeNode * node, char * term)
 {
-    assert(tree);
+    assert(node);
     assert(term);
 
-    TreeNode * dst_node = TreeFind(tree, term);
+    TreeNode * dst_node = SubtreeFind(node, term);
     if (!dst_node)
     {
         fprintf(stdout, "No such term in tree (%s not found)\n", term);
 
         return 1; // not found
     }
-
-    fprintf(stdout, "%s has following properties:\n", term);
-
-    stack * path = TreeNodePath(tree, dst_node);
+    stack * path = CtorStack(MAX_TREE_PATH);
+    SubtreeNodePath(node, dst_node, path);
     stack * back_path = CtorStack(path->size); //? seems like crutch
     while (path->size > 0)
     {
         PushStack(back_path, PopStack(path));
     }
 
-    TreeNode * curr_node = NULL;
-    curr_node = tree->root;
+    TreeNode * curr_node = node;
+
+    fprintf(stdout, "%s has following properties:\n", term);
 
     while(back_path->size > 0)
     {
@@ -199,6 +200,16 @@ int AkinatorTreeDefine (Tree * tree, char * term)
 
     DtorStack(back_path);
     DtorStack(path);
+
+    return 0;
+}
+
+int AkinatorTreeDefine (Tree * tree, char * term)
+{
+    assert(tree);
+    assert(term);
+
+    AkinatorSubtreeDefine(tree->root, term);
 
     return 0; // found
 }
