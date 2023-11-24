@@ -18,10 +18,13 @@
 const int MAX_PROGMODE_LEN = 15;
 const int MAX_TREEPATH_LEN = 100;
 
+const char * TREE_DATABASE = "akinator/database/";
+
 #define streq(s1, s2) (!strcmp((s1), (s2)))
 
 int DoGuessMode(Tree * tree, const char * tree_path, FILE * user_stream);
 int DoDefineMode(Tree * tree, FILE * user_stream);
+stack * BuildDefinitionStack (Tree * tree, char * term);
 
 int main()
 {
@@ -49,7 +52,59 @@ int main()
     }
     else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
     {
-        ;
+        char first[MAX_WORD] = "";
+        fprintf(stdout, "First term?\n>> ");
+        fgets(first, MAX_WORD, user_stream);
+        first[strcspn(first, "\r\n")] = 0;
+
+        char second[MAX_WORD] = "";
+        fprintf(stdout, "Second term?\n>> ");
+        fgets(second, MAX_WORD, user_stream);
+        second[strcspn(second, "\r\n")] = 0;
+
+        stack * first_path  = BuildDefinitionStack (&tree, first);
+        stack * second_path = BuildDefinitionStack (&tree, second);
+
+        int turn = 0;
+
+        char ** similarities = (char **) calloc (MAX_TREE_PATH, sizeof(char *));
+        char ** similarities_init = similarities;
+
+        TreeNode * difference = tree.root;
+
+        while ((turn = PopStack(first_path)) == PopStack(second_path))
+        {
+            *similarities++ = difference->data;
+
+            if (turn == 0)
+            {
+                difference = difference->left;
+            }
+            else
+            {
+                difference = difference->right;
+            }
+        }
+
+        similarities = similarities_init;
+
+        fprintf(stdout, "Both %s and %s have properties:\n", first, second);
+        while (*similarities)
+        {
+            fprintf(stdout, "\t%s\n", *similarities);
+            similarities++;
+        }
+
+        fprintf(stdout, "But %s has following properties:\n", first);
+        AkinatorSubtreeDefine(difference, first);
+
+        fprintf(stdout, "Whereas %s has following properties:\n", second);
+        AkinatorSubtreeDefine(difference, second);
+
+        free(similarities_init);
+
+        DtorStack(first_path);
+        DtorStack(second_path);
     }
     else
     {
@@ -107,4 +162,26 @@ int DoDefineMode(Tree * tree, FILE * user_stream)
     term[strcspn(term, "\r\n")] = 0;
 
     return AkinatorTreeDefine(tree, term);
+}
+
+stack * BuildDefinitionStack (Tree * tree, char * term)
+{
+    TreeNode * dst_node = TreeFind(tree, term);
+    if (!dst_node)
+    {
+        fprintf(stdout, "No such term in tree (%s not found)\n", term);
+
+        return NULL; // not found
+    }
+
+    stack * path = TreeNodePath(tree, dst_node);
+    stack * back_path = CtorStack(path->size); //? seems like crutch
+    while (path->size > 0)
+    {
+        PushStack(back_path, PopStack(path));
+    }
+
+    DtorStack(path);
+
+    return back_path;
 }
