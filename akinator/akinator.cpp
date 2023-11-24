@@ -182,8 +182,6 @@ int AkinatorSubtreeDefine (TreeNode * node, char * term)
 
     TreeNode * curr_node = node;
 
-    fprintf(stdout, "%s has following properties:\n", term);
-
     while(back_path->size > 0)
     {
         if (PopStack(back_path) == 0)
@@ -208,6 +206,13 @@ int AkinatorTreeDefine (Tree * tree, char * term)
 {
     assert(tree);
     assert(term);
+
+    if (!TreeFind(tree, term))
+    {
+        return 1;
+    }
+
+    fprintf(stdout, "%s has following properties:\n", term);
 
     AkinatorSubtreeDefine(tree->root, term);
 
