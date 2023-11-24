@@ -3,7 +3,8 @@
  *
  * email: tikhonovty@gmail.com
  * telegram: https://t.me/netortofficial
- * GitHub repo: https://github.com/UjeNeTORT
+ * GitHub:   https://github.com/UjeNeTORT
+ * repo:     https://github.com/UjeNeTORT/Tree
  *************************************************************************/
 
 #include <assert.h>

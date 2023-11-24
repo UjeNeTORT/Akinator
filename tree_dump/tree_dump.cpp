@@ -3,7 +3,8 @@
  *
  * email: tikhonovty@gmail.com
  * telegram: https://t.me/netortofficial
- * GitHub repo: https://github.com/UjeNeTORT
+ * GitHub:   https://github.com/UjeNeTORT
+ * repo:     https://github.com/UjeNeTORT/Tree
  *************************************************************************/
 
 #include <assert.h>
@@ -70,7 +71,7 @@ int WriteHTML (const char * HTML_fname, int dump_id, size_t err_vec)
     FILE * HTML_file = fopen (HTML_fname, "wb"); // ! attention, deletion of old dumps
     fprintf(HTML_file, "<div graph_%d style=\"background-color: %s; color: %s;\">\n", dump_id, GRAPH_BACKGROUND, GRAPH_TEXTCLR);
 
-    fprintf (HTML_file, "<p style=\"color: %s; font-family:monospace; font-size: 20px\">[%s]\nTREE DUMP of \"s\" called from s (d) from s</p>", GRAPH_TEXTCLR, asctime(loc_time));
+    fprintf (HTML_file, "<p style=\"color: %s; font-family:monospace; font-size: 20px\">[%s] TREE</p>", GRAPH_TEXTCLR, asctime(loc_time));
 
     fprintf (HTML_file, "<img src=\"../../../%sgraph_dump_%d.png\">\n", GRAPH_PNGS_PATH, dump_id);
 

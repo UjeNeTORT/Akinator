@@ -3,7 +3,8 @@
  *
  * email: tikhonovty@gmail.com
  * telegram: https://t.me/netortofficial
- * GitHub repo: https://github.com/UjeNeTORT
+ * GitHub:   https://github.com/UjeNeTORT
+ * repo:     https://github.com/UjeNeTORT/Tree
  *************************************************************************/
 
 #include <assert.h>
@@ -296,13 +297,12 @@ stack * TreeNodePath (Tree * tree, TreeNode * dst_node)
     assert(dst_node);
 
     stack * path = CtorStack(MAX_TREE_PATH);
-
     SubtreeNodePath(tree->root, dst_node, path);
 
     return path;
 }
 
-int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order) // compatible with NodePrinter_t
+int WriteSubtree (FILE * stream, const TreeNode * node, TraverseOrder traverse_order) // not compatible with NodePrinter_t
 {
     if (node == NULL)
     {
