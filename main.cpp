@@ -31,6 +31,10 @@ stack * BuildDefinitionStack (Tree * tree, char * term);
 
 int main()
 {
+    fprintf(stdout, "\n"
+                    "# Akinator by UjeNeTort\n"
+                    "# TIKHONOV YAROSLAV 2023\n\n");
+
     FILE * user_stream = stdin;
 
     char tree_path[MAX_TREEPATH_LEN] = "";
@@ -39,31 +43,43 @@ int main()
     // todo check if tree path is correct
     Tree tree = ReadGuessTree(tree_path);
 
-    fprintf(stdout, "What do you want from me? [guess (g) | define (d) | compare (c) | call you a clown ()]\n>> ");
-
     char prog_mode[MAX_PROGMODE_LEN] = "";
-    fscanf(user_stream, "%s", prog_mode);
-    fgetc(user_stream); // hanging \n
 
-    if (streq(prog_mode, "g") || streq(prog_mode, "guess"))
+    while (true)
     {
-        DoGuessMode(&tree, tree_path, user_stream);
-    }
-    else if (streq(prog_mode, "d") || streq(prog_mode, "define"))
-    {
-        DoDefineMode(&tree, user_stream);
-    }
-    else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
-    {
-        DoCompareMode(&tree, user_stream);
-    }
-    else
-    {
-        fprintf(stdout, "Incorrect input \"%s\" (You ugly *jojo music*)\n", prog_mode);
-    }
+        fprintf(stdout, "What do you want from me? [guess (g) | define (d) | compare (c) | show (s) | quit (q) | call you a clown ()]\n>> ");
+        fscanf(user_stream, "%s", prog_mode);
+        fgetc(user_stream); // hanging \n
 
-    DrawGuessTree("dump.html", &tree);
+        if (streq(prog_mode, "g") || streq(prog_mode, "guess"))
+        {
+            fprintf(stdout, "ATTENTION! To quit type in \"q\" instead of killing terminal\n"
+                            "Enjoy!\n");
+            DoGuessMode(&tree, tree_path, user_stream);
+        }
+        else if (streq(prog_mode, "d") || streq(prog_mode, "define"))
+        {
+            DoDefineMode(&tree, user_stream);
+        }
+        else if (streq(prog_mode, "c") || streq(prog_mode, "compare"))
+        {
+            DoCompareMode(&tree, user_stream);
+        }
+        else if (streq(prog_mode, "s") || streq(prog_mode, "show"))
+        {
+            DrawGuessTree("dump.html", &tree);
+        }
+        else if (streq(prog_mode, "q") || streq(prog_mode, "quit"))
+        {
+            fprintf(stdout, "Quitting...\n");
 
+            break;
+        }
+        else
+        {
+            fprintf(stdout, "Incorrect input \"%s\" (You ugly *jojo music*)\n", prog_mode);
+        }
+    }
     TreeDtor(&tree);
 
     fprintf(stdout, "Goodbye!\n");
