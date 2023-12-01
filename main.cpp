@@ -8,6 +8,7 @@
  *************************************************************************/
 
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,8 @@ int DoDefineMode(Tree * tree, FILE * user_stream);
 int DoCompareMode(Tree * tree, FILE * user_stream);
 
 stack * BuildDefinitionStack (Tree * tree, char * term);
+
+static int DelExtraBlanks (char * string);
 
 int main()
 {
@@ -140,11 +143,13 @@ int DoCompareMode(Tree * tree, FILE * user_stream)
     fprintf(stdout, "First term?\n>> ");
     fgets(first, MAX_WORD, user_stream);
     first[strcspn(first, "\r\n")] = 0;
+    DelExtraBlanks(first);
 
     char second[MAX_WORD] = "";
     fprintf(stdout, "Second term?\n>> ");
     fgets(second, MAX_WORD, user_stream);
     second[strcspn(second, "\r\n")] = 0;
+    DelExtraBlanks(second);
 
     stack * first_path  = BuildDefinitionStack (tree, first);
     stack * second_path = BuildDefinitionStack (tree, second);
@@ -216,3 +221,23 @@ stack * BuildDefinitionStack (Tree * tree, char * term)
     return back_path;
 }
 
+// delete extra spaces in the end
+static int DelExtraBlanks (char * string)
+{
+    assert(string);
+    assert(*string);
+
+    // also assume that in the beginning of the string there are no extra blanks
+    while (*string) string++;
+    int deleted = 0;
+    string--;
+
+    while (isblank(*string))
+    {
+        *string = 0;
+        string--;
+        deleted++;
+    }
+
+    return deleted;
+}
